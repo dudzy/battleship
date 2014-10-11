@@ -1,0 +1,11 @@
+WebSocket battleship protocol
+version 0.1
+
+chat - chat message
+move - execute move on field opponent
+createfield - insert the ships on your field
+whomove - get who moving
+notopponent - opponent disconnected
+opponentcapitulate - opponent capitulated
+opponentinformation - connected opponent information (name,rank etc)
+opponentfieldinformation - get changes on field opponent
