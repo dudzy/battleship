@@ -1,4 +1,9 @@
-﻿var clients = {};
+﻿var io = require( 'socket.io' ).listen( 8080 ); 
+
+// disable full log level
+io.set( 'log level', 1 );
+
+var clients = {};
 
 function getTime() {
 	var time = ( new Date() ).toLocaleTimeString();
@@ -15,11 +20,6 @@ function getClientsInRoom(context,room){
 }
 
 exports.createSocket = function (receiveCallback,introduceCallback,errorCallback,closeCallback) {
-	var io = require( 'socket.io' ).listen( 8080 ); 
-
-	// disable full log level
-	io.set( 'log level', 1 );
-
 	//client connection handler
 	io.sockets.on(
 		'connection',

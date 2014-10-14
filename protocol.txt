@@ -1,8 +1,15 @@
 WebSocket battleship protocol
 version 0.1
 
-chat - chat message
-move - execute move on field opponent
+chat(send and receive) -
+	chat message
+	example
+		R S { "event": "chat", "message" : "text message" }
+move(send and receive) - 
+	execute move on field opponent
+	example
+		S { "event": "move", column : "A" , row: "1" }
+		R { "event": "move", "action" : "error|empty|dead|hit" , column : "A" , row: "1" }
 createfield - insert the ships on your field
 whomove - get who moving
 notopponent - opponent disconnected

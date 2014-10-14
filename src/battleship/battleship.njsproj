@@ -36,6 +36,9 @@
     <Compile Include="logic\gameSocket.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\user.js" />
+    <Content Include="..\..\protocol.txt">
+      <Link>protocol.txt</Link>
+    </Content>
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
