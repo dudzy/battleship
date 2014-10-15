@@ -5,7 +5,7 @@ function createCells( target ) {
 	for ( var i = 0; i < alphabet.length; i++ ) {
 		var currentColumn = alphabet[i];
 		for ( var j = 1; j <= 10; j++ ) {
-			target[currentColumn + "x" + j] = 0;
+			target[currentColumn + "x" + j] = null;
 		}
 	}
 }
@@ -49,6 +49,16 @@ exports.getEnemyCellValue = function ( index, column, row ) {
 		return sessions[index].First[getCellName( column, row )];
 		
 	}
+}
+exports.setCellValue = function ( index, column, row , value , throwIfNull ) {
+	var collection = sessions[index].currentPlayer == 0 ? sessions[index].First : sessions[index].Second;
+	var cellName = getCellName( column, row );
+	if ( throwIfNull && collection[cellName] == null ) throw 'cell is not null!';
+	collection[cellName] = value;
+}
+exports.setEnemyCellValue = function ( index, column, row , value ) {
+	var collection = sessions[index].currentPlayer == 0 ? sessions[index].Second : sessions[index].First;
+	collection[getCellName( column, row )] = value;
 }
 exports.getCurrentPlayer = function ( index ) {
 	return sessions[index].currentPlayer;

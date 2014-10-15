@@ -1,18 +1,36 @@
 WebSocket battleship protocol
 version 0.1
 
+R - receive single message
+RM - receive multiple message (broadcast message in game session)
+S - send message
+
 chat(send and receive) -
 	chat message
 	example
-		R S { "event": "chat", "message" : "text message" }
+		RM S { "event": "chat", "message" : "text message" }
 move(send and receive) - 
 	execute move on field opponent
 	example
 		S { "event": "move", column : "A" , row: "1" }
-		R { "event": "move", "action" : "error|empty|dead|hit" , column : "A" , row: "1" }
-createfield - insert the ships on your field
-whomove - get who moving
-notopponent - opponent disconnected
-opponentcapitulate - opponent capitulated
+		RM { "event": "move", "action" : "error|empty|dead|hit" , column : "A" , row: "1" }
+createfield - 
+	insert the ships on your field
+	example
+		S {"event":"createfield", "ships":[ {"column":"A","row":"1","count":1-4,"isVertical":true} ]}
+		R {"event":"createfield","state":""}
+whomove - 
+	get who moving
+	example
+		S {"event":"whomove"}
+		R {"event":"whomove","isYouTurn":true|false}
+notopponent - 
+	opponent disconnected
+	example
+		RM {"event":"notopponent"}
+opponentcapitulate - 
+	opponent capitulated
+	example
+		RM {"event":"opponentcapitulate"}
 opponentinformation - connected opponent information (name,rank etc)
 opponentfieldinformation - get changes on field opponent
