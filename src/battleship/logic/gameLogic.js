@@ -1,25 +1,28 @@
-﻿exports.createGame = function ( token, commandContext ) {
-	var session = require( "./gameSession" );
-	var socket = require( "./gameSocket" );
+﻿
+//create game session
+exports.createGame = function ( token, commandContext ) {
+	var session = require( './gameSession' );
+	var socket = require( './gameSocket' );
 	
 	var index = session.createNewGameSession( token );
 	
 	function getInItialCellObject( count ) {
 		return { ship : { count : count , sourceSize: count } , isProcessed: false };
 	}
-
-	function addToHorizontal( count, startColumn, startRow ) {
-		if ( count > 4 || count < 1 ) throw 'out of range';
+	
+	function addToHorizontal( index , count, startColumn, startRow ) {
+		if ( count > 4 || count < 1 ) throw "out of range";
 		
+		var alphabet = 'ABCDEFGHIJ';
 		for ( var i = 0; i < count; i++ ) {
-			session.setCellValue( index, , startRow , true );
+			session.setCellValue( index, alphabet[i] , startRow , true );
 		}
 	}
 	
-	function addToVertical( count, startColumn, startRow ) {
+	function addToVertical( index , count, startColumn, startRow ) {
 		if ( count > 4 || count < 1 ) throw 'out of range';
 		
-		var obj = getInItialCellObject(count);
+		var obj = getInItialCellObject( count );
 		for ( var i = startRow; i < count; i++ ) {
 			session.setCellValue( index, startColumn , i , obj , true );
 		}
@@ -45,22 +48,21 @@
 				for ( var ship in command.ships ) {
 					try {
 						if ( ship.isVertical ) {
-							addToVertical( ship.count , ship.column , ship.row );
+							addToVertical( eventSource.sessionId, ship.count , ship.column , ship.row );
 						} else {
-							addToHorizontal( ship.count , ship.column , ship.row );
+							addToHorizontal( eventSource.sessionId, ship.count , ship.column , ship.row );
 						}
 					} catch ( x ) {
 						eventSource.socket.json.send( { event: 'createField', state: 'collision ships error' } );
 						return;
 					}
-					
 				}
 				break;
 			case "move":
-				var currentPlayer = session.getCurrentPlayer( index );
+				var currentPlayer = session.getCurrentPlayer( eventSource.sessionId );
 				var socketPlayer = getSocketPlayer( eventSource.roomClients );
 				if ( socketPlayer != currentPlayer ) return;
-				var content = session.getEnemyCellValue( index, command.column, command.row );
+				var content = session.getEnemyCellValue( eventSource.sessionId , command.column, command.row );
 				if ( content.isProcessed ) return;
 				
 				var action = 'empty';
@@ -71,7 +73,7 @@
 						action = --content.ship.count == 0 ? 'dead' : 'hit';
 					}
 				}
-				session.changeCurrentPlayer( index );
+				session.changeCurrentPlayer( eventSource.sessionId );
 				for ( var roomClient in eventSource.roomClients ) {
 					roomClient.json.send( { event: 'move', action : action , column : command.column , row: command.row } );
 				}
@@ -82,7 +84,7 @@
 				}
 				break;
 			case "whomove":
-				var currentPlayer = session.getCurrentPlayer( index );
+				var currentPlayer = session.getCurrentPlayer( eventSource.sessionId );
 				var socketPlayer = getSocketPlayer( eventSource.roomClients );
 				
 				eventSource.socket.json.send( { event: 'whomove', isYouTurn: currentPlayer == socketPlayer } );
@@ -91,13 +93,20 @@
 		}
 	},
 	function ( eventSource ) {
-		return eventSource.room == index;
+		return session.roomExists( eventSource.room );
 	},
 	function ( eventSource ) {
+		//error
 	},
 	function ( eventSource ) {
-			//close
+		//if there was one client in room that destroy the room
+		if ( eventSource.roomClients.length == 1 ) {
+			eventSource.roomClients[0].json.send( { event: "notopponent" } );
+			eventSource.roomClients[0].disconnect( );
+		}
 	}
  );
+	
+	return index;
 	
 }

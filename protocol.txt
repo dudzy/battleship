@@ -5,7 +5,11 @@ R - receive single message
 RM - receive multiple message (broadcast message in game session)
 S - send message
 
-chat(send and receive) -
+introduce - 
+	introduce client
+		S { "event":"introduce","name":"","room":-1}
+		RM { "event":"introduce","name":"" , "time":timestamp}
+chat -
 	chat message
 	example
 		RM S { "event": "chat", "message" : "text message" }

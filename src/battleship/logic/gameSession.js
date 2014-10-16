@@ -10,8 +10,8 @@ function createCells( target ) {
 	}
 }
 function initFields( currentState ) {
-	createCells( currentState.Self );
-	createCells( currentState.Enemy );
+	createCells( currentState.First );
+	createCells( currentState.Second );
 }
 function createNewGameSession( token ) {
 	if ( sessions.length > 20 ) throw 'Sessions limit!';
@@ -27,8 +27,8 @@ function getCellName( column, row ) {
 	return "" + column + "x" + row;
 }
 
-exports.createNewGameSession = function () {
-	return createNewGameSession( );
+exports.createNewGameSession = function ( token ) {
+	return createNewGameSession( token );
 }
 exports.clearCells = function ( index ) {
 	var session = sessions[index];
@@ -66,4 +66,8 @@ exports.getCurrentPlayer = function ( index ) {
 exports.changeCurrentPlayer = function ( index ) {
 	var current = sessions[index].currentPlayer;
 	sessions[index].currentPlayer = current == 1 ? 0 : 1;
+}
+exports.roomExists = function ( index ) {
+	if ( index <= sessions.length ) return true;
+	return sessions[index] != null;
 }
